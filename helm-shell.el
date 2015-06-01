@@ -23,11 +23,11 @@
 
 ;;; Commentary:
 
-;; Create, switch and delete inferior shell modes easily with Helm
+;; Create, switch inferior shell modes easily with Helm
 
 ;; A call to `helm-shell` will show a list of running terminal sessions
 ;; by examining buffers with major mode `term-mode`.  From there, you
-;; should be able to create, delete or switch over to existing
+;; should be able to create, or switch over to existing
 ;; terminal buffers
 
 
@@ -49,30 +49,14 @@
     (shell))
   (rename-buffer (format "*shell<%s>*" name)))
 
-(defun helm-shell/delete-marked-shells (ignored)
-  "Delete marked shells.  The IGNORED argument is not used."
-  (let* ((buffers (helm-marked-candidates :with-wildcard t))
-         (len (length buffers)))
-    (with-helm-display-marked-candidates
-      helm-marked-buffer-name
-          ;; kill the process in the buffer
-          ;; then delete buffer, to avoid confirmation questions
-        (cl-dolist (b buffers)
-          (delete-process b)
-          (kill-buffer b))
-        ;; restore orignal window configuration
-        (balance-windows (selected-frame))
-        (message "%s Shells deleted" len))))
-
 (defvar helm-shell/shell-source-shells
       '((name . "Shell buffers")
         (candidates . (lambda () (or
                                   (helm-shell/shell-buffers)
                                   (list ""))))
         (action . (("Switch to shell buffer" . (lambda (candidate)
-                                                    (switch-to-buffer candidate)))
-                   ("Exit marked shells" 'helm-shell/delete-marked-shells)))))
- 
+                                                 (switch-to-buffer candidate)))
+                   ))))
 
 (defvar helm-shell/shell-source-shell-not-found
   '((name . "Launch a new shell")
